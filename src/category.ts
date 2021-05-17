@@ -1,15 +1,12 @@
-'use strict';
-
-
-import {escape} from './tools';
+import { escapeICalValue } from './utils';
 
 
 export interface ICalCategoryData {
-    name?: string | null
+	name?: string | null;
 }
 
 export interface ICalCategoryInternalData {
-    name: string | null
+	name: string | null;
 }
 
 
@@ -32,67 +29,67 @@ export interface ICalCategoryInternalData {
  * ```
  */
 export default class ICalCategory {
-    private readonly data: ICalCategoryInternalData;
+	private readonly data: ICalCategoryInternalData;
 
-    /**
-     * Constructor of [[`ICalCategory`]].
-     * @param data Category Data
-     */
-    constructor(data: ICalCategoryData) {
-        this.data = {
-            name: null
-        };
+	/**
+	 * Constructor of [[`ICalCategory`]].
+	 * @param data Category Data
+	 */
+	constructor(data: ICalCategoryData) {
+		this.data = {
+			name: null
+		};
 
-        data.name !== undefined && this.name(data.name);
-    }
-
-
-    /**
-     * Get the category name
-     * @since 0.3.0
-     */
-    name(): string | null;
-
-    /**
-     * Set the category name
-     * @since 0.3.0
-     */
-    name(name: string | null): this;
-    name(name?: string | null): this | string | null {
-        if (name === undefined) {
-            return this.data.name;
-        }
-
-        this.data.name = name || null;
-        return this;
-    }
+		data.name !== undefined && this.name(data.name);
+	}
 
 
-    /**
-     * Return a shallow copy of the category's options for JSON stringification.
-     * Can be used for persistence.
-     *
-     * @since 0.2.4
-     */
-    toJSON(): ICalCategoryInternalData {
-        return Object.assign({}, this.data);
-    }
+	/**
+	 * Get the category name
+	 * @since 0.3.0
+	 */
+	name(): string | null;
+
+	/**
+	 * Set the category name
+	 * @since 0.3.0
+	 */
+	name(name: string | null): this;
+	name(name?: string | null): this | string | null {
+		if (name === undefined) {
+			return this.data.name;
+		}
+
+		this.data.name = name || null;
+		return this;
+	}
 
 
-    /**
-     * Return generated category name as a string.
-     *
-     * ```javascript
-     * console.log(category.toString());
-     * ```
-     */
-    toString(): string {
+	/**
+	 * Return a shallow copy of the category's options for JSON stringification.
+	 * Can be used for persistence.
+	 *
+	 * @since 0.2.4
+	 */
+	toJSON(): ICalCategoryInternalData {
+		return Object.assign({}, this.data);
+	}
 
-        // CN / Name
-        if (!this.data.name) {
-            throw new Error('No value for `name` in ICalCategory given!');
-        }
 
-        return escape(this.data.name);
-    }
+	/**
+	 * Return generated category name as a string.
+	 *
+	 * ```javascript
+	 * console.log(category.toString());
+	 * ```
+	 */
+	toString(): string {
+
+		// CN / Name
+		if (!this.data.name) {
+			throw new Error('No value for `name` in ICalCategory given!');
+		}
+
+		return escapeICalValue(this.data.name);
+	}
 }

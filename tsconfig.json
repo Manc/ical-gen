@@ -1,19 +1,17 @@
 {
     "compilerOptions": {
-        "target": "es6",
-        "module": "none",
-        "moduleResolution": "node",
-        "sourceMap": true,
-        "declaration": true,
-        "outDir": "./dist",
+        "target": "ES2019",
+        "module": "CommonJS",
         "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "baseUrl": "./src",
+        "outDir": "dist",
+        "declaration": true,
         "esModuleInterop": true
     },
     "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "**/*.spec.ts"
+        "src/**/*",
+        "test-old/**/*",
+        "test/**/*"
     ]
 }

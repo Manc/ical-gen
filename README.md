@@ -1,132 +1,102 @@
-![ical-generator Logo](https://d.sebbo.net/ical-generator-logo-AvKRjlfYJe4OlPV9l0zgSDlgyW59bOzFzjUUTG9tGM0ySKQuZ1PbzkZO9XYZ1vjLt8XwRgjZH2CYw22vD9OTzFeTvEWlqPFfyuox.jpg)
+# ical-gen
 
-# ical-generator
+[![Build Status][travis-image]][travis-url]
+[![NPM version][npm-version-image]][npm-url]
+[![Size][min-size-image]][npm-url]
+[![MIT License][license-image]][license-url]
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
-![Size](https://img.shields.io/bundlephobia/min/ical-generator?style=flat-square)
-[![Status](https://img.shields.io/github/workflow/status/sebbo2002/ical-generator/Tests?style=flat-square)](https://github.com/sebbo2002/ical-generator/actions)
-![Dependencies](https://img.shields.io/depfu/sebbo2002/ical-generator?style=flat-square)
+**ical-gen** is a super-small library that lets you easily create valid iCalendar files or feeds.
+
+**ical-gen** is a fork of the amazing [**ical-generator**](https://github.com/sebbo2002/ical-generator) library by Sebastian Pekarek, which has more features and is probably generally better supported by its author than this brand new library.
+
+> Warning: This library is an early draft with only a small subset of features of the original and certainly not production ready.
+
+
+## Why another library?
+
+Although the original **ical-generator** is great, it comes with support for several different third-party date libararies, HTTP server output, validation and more, which are not always needed. This convenience adds some bulk and may slow things down. Personally, I ran into some TypeScript issues using **ical-generator** without also installing third-party libraries in my project.
+
+The goals for this library are:
+
+- efficient and fast processing speed
+- clean, simple and strict TypeScript API
+- predictable results
+- zero dependencies for the production build
+
+
+## Some differences
+
+Some differences between **ical-generator** and **ical-gen** (this library):
+
+- This library only supports JavaScript-native `Date` objects as date. If you work with Moment.js, Day.js or Luxon, simply convert the date object to a native `Date` and apply the time zone string where applicable.
+- Although the underlying logic is pretty much the same as that of **ical-generator**, the API is quite a bit different, but also cleaner, which should result in more predictable results.
+  - For example, if a property is required, it will be enforced by the TypeScript API right away instead of throwing a runtime error later down the line.
+  - Class properties can usually be accessed and manipulated directly, which saves us a whole lot of getter, setter and other helper methods. As long as you know how to assign a new value to a variable or `push()` an item to an array, you can do everything you want.
+- The way data is stored internally is different with an aim to be more efficient.
+- **ical-generator** always generates a UUID string for the `UID` property when a new event is created, which you can then override with a custom value. With **ical-gen** you must always provide your own `UID` value. If you really, really need a universally unique value that is always different whenever you render the event (which you shoudln’t), apply your own UUID method.
+
 
 `ical-generator` is a small but fine library with which you can very easily create a valid iCal calendars, for example
 to generate subscriptionable calendar feeds.
 
-<table><tr><td>
-<b>⚠️ Version 2.0.0</b><br /><br />
-<p>You are looking at the readme of the new version 2.0.0, which is currently still under development. The new version is
-a complete rewrite in Typescript, but I tried to keep most of the API. Nevertheless, there are some changes. You can
-install this future version by running <code>npm i ical-generator@next</code>.</p>
-
-<p>If you are looking for the readme of the current version, you can find it
-<a href="https://github.com/sebbo2002/ical-generator/blob/main/README.md">here</a>.</p>
-<p>If you want to help out or want to know what's in the pipeline with the new version, you're welcome to take a look
-<a href="https://github.com/sebbo2002/ical-generator/issues?q=milestone%3A%22v2.0.0+%F0%9F%8E%89%22+">here</a> and get an idea of
-what's in the new version.</p>
-</td></tr></table>
-
 
 ## 📦 Installation
 
-	npm install ical-generator
+```sh
+yarn add ical-gen
+# or
+npm install ical-gen
+```
 
 
 ## ⚡️ Quick Start
 
-```javascript
-import ical from 'ical-generator';
-import http from 'http';
-
-const calendar = ical({name: 'my first iCal'});
-calendar.createEvent({
-    start: moment(),
-    end: moment().add(1, 'hour'),
-    summary: 'Example Event',
-    description: 'It works ;)',
-    location: 'my room',
-    url: 'http://sebbo.net/'
-});
-
-http.createServer((req, res) => calendar.serve(res))
-    .listen(3000, '127.0.0.1', () => {
-        console.log('Server running at http://127.0.0.1:3000/');
-    });
-```
-
-## 📑 API-Reference
-
-- [Index](https://sebbo2002.github.io/ical-generator/develop/reference/)
-    - [ICalCalendar](https://sebbo2002.github.io/ical-generator/develop/reference/classes/icalcalendar.html)
-    - [ICalEvent](https://sebbo2002.github.io/ical-generator/develop/reference/classes/icalevent.html)
-        - [ICalAlarm](https://sebbo2002.github.io/ical-generator/develop/reference/classes/icalalarm.html)
-        - [ICalAttendee](https://sebbo2002.github.io/ical-generator/develop/reference/classes/icalattendee.html)
-        - [ICalCategory](https://sebbo2002.github.io/ical-generator/develop/reference/classes/icalcategory.html)
-
-## 🕒 Date, Time & Timezones
-
-ical-generator supports [native Date](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date),
-[moment.js](https://momentjs.com/) (and [moment-timezone](https://momentjs.com/timezone/), [Day.js](https://day.js.org/en/) and
-[Luxon's](https://moment.github.io/luxon/) [DateTime](https://moment.github.io/luxon/docs/class/src/datetime.js~DateTime.html)
-objects. You can also pass a string which is then passed to javascript's `Date` internally.
-
-It is recommended to use UTC time as far as possible. `ical-generator` will output all time information as UTC time as
-long as no time zone is defined. For day.js, a plugin is necessary for this, which is a prerequisite. If a time zone is
-set, `ical-generator` assumes that the given time matches the time zone. If a time zone is used, it is also recommended
-to use a VTimezone generator. Such a function generates a VTimezone entry and returns it. For example, ical-timezones can
-be used for this:
-
 ```typescript
-import ical from 'ical-generator';
-import {getVtimezoneComponent} from '@touch4it/ical-timezones';
+import { ICalCalendar, ICalEvent } from 'ical-gen';
 
-const cal = new ICalCalendar();
-cal.timezone({
-    name: 'FOO',
-    generator: getVtimezoneComponent
+// Instantiate a new calendar object:
+const calendar = new ICalCalendar({
+	prodId: {
+		company: 'My Company X',
+		product: 'My Product Name',
+		language: 'EN',
+	},
+	// ...add more calendar options if you like...
 });
-cal.createEvent({
-    start: new Date(),
-    timezone: 'Europe/London'
+
+// Instantiate a new event object:
+const event = new ICalEvent({
+	uid: 'MyUniqueUID@example.com', // or supply a UUID
+	timezone: 'Europe/London',
+	start: new Date('2021-05-17T18:30:00Z'),
+	end: new Date('2021-05-17T21:00:00Z'),
+	sequence: 1,
+	stamp: new Date('2021-05-16T00:00:00Z'),
+	summary: 'My Birthday Party',
 });
+
+// Add the event to the calendar:
+calendar.addEvent(event);
+// or directly:
+calendar.events.push(event);
+
+// Render the iCalendar file or feed:
+const ics = calendar.render();
+
+// Then do whatever you want with that string. Serve it over HTTP,
+// write it to a file, send it by email or print it to the console:
+console.log(ics);
 ```
 
-If a `moment-timezone` object or Luxon's `setZone` method works, `ical-generator` sets it according to the time zone set
-in the calendar/event.
 
 
+[npm-url]: https://npmjs.org/package/ical-gen
+[npm-version-image]: https://img.shields.io/npm/v/ical-gen.svg?style=flat
 
+[travis-url]: https://travis-ci.org/Manc/ical-gen
+[travis-image]: https://img.shields.io/travis/Manc/ical-gen/master.svg?style=flat
 
-## 🚦 Tests
+[min-size-image]: https://img.shields.io/bundlephobia/min/ical-gen?style=flat
 
-```
-npm test
-npm run coverage
-npm run browser-test
-```
-
-
-## 🙋 FAQ
-
-### What's `Error: Can't resolve 'fs'`?
-`ical-generator` uses the node.js `fs` module to save your calendar on the filesystem. In browser environments, you usually don't need this, so if you pass `null` for fs in your bundler. In webpack this looks like this:
-
-```json
-{
-  "node": {
-    "fs": "empty"
-  }
-}
-```
-
-### Where's the changelog?
-It's [here](https://github.com/sebbo2002/ical-generator/blob/develop/CHANGELOG.md). If you need the changelog for
-`ical-generator` 1.x.x and older, you'll find it [here](https://github.com/sebbo2002/ical-generator/blob/25338b8bf98f9afd3c88849e735fa33fa45fb766/CHANGELOG.md).
-
-### I use Typescript and get `TS2307: Cannot find module` errors
-`ical-generator` supports some third-party libraries such as moment.js or Day.js. To enable Typescript to do something
-with these types, they must of course also be installed. Unfortunately, npm does not install `peerDependencies` in
-versions 4-6, so these dependencies have to be installed manually. The best thing to do is to update your npm installation
-and reinstall `ical-generator`, which should solve the problem.
-
-
-## 🙆🏼‍♂️ Copyright and license
-
-Copyright (c) Sebastian Pekarek under the [MIT license](LICENSE).
+[license-url]: LICENSE
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
