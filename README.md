@@ -33,11 +33,7 @@ Some differences between **ical-generator** and **ical-gen** (this library):
   - For example, if a property is required, it will be enforced by the TypeScript API right away instead of throwing a runtime error later down the line.
   - Class properties can usually be accessed and manipulated directly, which saves us a whole lot of getter, setter and other helper methods. As long as you know how to assign a new value to a variable or `push()` an item to an array, you can do everything you want.
 - The way data is stored internally is different with an aim to be more efficient.
-- **ical-generator** always generates a UUID string for the `UID` property when a new event is created, which you can then override with a custom value. With **ical-gen** you must always provide your own `UID` value. If you really, really need a universally unique value that is always different whenever you render the event (which you shoudln’t), apply your own UUID method.
-
-
-`ical-generator` is a small but fine library with which you can very easily create a valid iCal calendars, for example
-to generate subscriptionable calendar feeds.
+- **ical-generator** always generates a UUID string for the `UID` property when a new event is created, which you can then override with a custom value. With **ical-gen** you must always provide your own `UID` value. If you really, really need a universally unique value that is always different whenever you render the event (which you shouldn’t), apply your own UUID method.
 
 
 ## 📦 Installation
