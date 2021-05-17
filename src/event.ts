@@ -1,4 +1,4 @@
-import type { RRule } from 'rrule';
+// import type { RRule } from 'rrule';
 
 import {
 	// addOrGetCustomAttributes,
@@ -58,7 +58,7 @@ export interface ICalEventData {
 	stamp: Date;
 	allDay?: boolean;
 	floating?: boolean;
-	repeating?: ICalRepeatingOptions | RRule | string;
+	repeating?: ICalRepeatingOptions | string; // | RRule
 	/** Title of the event. */
 	summary: string;
 	/** Optional description of the event. */
