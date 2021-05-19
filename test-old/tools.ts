@@ -6,7 +6,7 @@ import assert from 'assert';
 // import dayjs from 'dayjs';
 // import dayJsUTCPlugin from 'dayjs/plugin/utc';
 // import dayJsTimezonePlugin from 'dayjs/plugin/timezone';
-import { formatDate, formatDateTZ, escapeICalValue, calLinesToString } from '../src/utils';
+import { formatDateOld, escapeICalValue, calLinesToString } from '../src/utils';
 
 // dayjs.extend(dayJsUTCPlugin);
 // dayjs.extend(dayJsTimezonePlugin);
@@ -19,49 +19,49 @@ describe('ICalTools', function () {
 
 			it('timezone=0 dateonly=0 floating=0', function () {
 				assert.strictEqual(
-					formatDate(false, date1, false, false),
+					formatDateOld(false, date1, false, false),
 					'20180705T182400Z'
 				);
 			});
 			it('timezone=0 dateonly=0 floating=1', function () {
 				assert.strictEqual(
-					formatDate(false, date1, false, true),
+					formatDateOld(false, date1, false, true),
 					'20180705T182400'
 				);
 			});
 			it('timezone=0 dateonly=1 floating=0', function () {
 				assert.strictEqual(
-					formatDate(false, date1, true, false),
+					formatDateOld(false, date1, true, false),
 					'20180705'
 				);
 			});
 			it('timezone=0 dateonly=1 floating=1', function () {
 				assert.strictEqual(
-					formatDate(false, date1, true, true),
+					formatDateOld(false, date1, true, true),
 					'20180705'
 				);
 			});
 			it('timezone=1 dateonly=0 floating=0', function () {
 				assert.strictEqual(
-					formatDate(true, date2, false, false),
+					formatDateOld(true, date2, false, false),
 					'20180705T182400'
 				);
 			});
 			it('timezone=1 dateonly=0 floating=1', function () {
 				assert.strictEqual(
-					formatDate(true, date2, false, true),
+					formatDateOld(true, date2, false, true),
 					'20180705T182400'
 				);
 			});
 			it('timezone=1 dateonly=1 floating=0', function () {
 				assert.strictEqual(
-					formatDate(true, date2, true, false),
+					formatDateOld(true, date2, true, false),
 					'20180705'
 				);
 			});
 			it('timezone=1 dateonly=1 floating=1', function () {
 				assert.strictEqual(
-					formatDate(true, date2, true, true),
+					formatDateOld(true, date2, true, true),
 					'20180705'
 				);
 			});
@@ -140,29 +140,29 @@ describe('ICalTools', function () {
 		// });
 	});
 
-	describe('formatDateTZ()', function () {
-		const date3 = new Date('2018-07-02T15:48:05.000Z');
+	// describe('formatDateTZ()', function () {
+	// 	const date3 = new Date('2018-07-02T15:48:05.000Z');
 
-		// it('should work with timezone', function () {
-		// 	const ed = {timezone: 'Europe/Berlin'};
-		// 	assert.strictEqual(
-		// 		formatDateTZ('Europe/Berlin', 'DSTART', moment('2018-07-02T15:48:05.000Z'), ed),
-		// 		'DSTART;TZID=Europe/Berlin:20180702T174805'
-		// 	);
-		// });
-		it('should work without timezone', function () {
-			assert.strictEqual(
-				formatDateTZ(false, 'DSTART', date3, {}),
-				'DSTART:20180702T154805Z'
-			);
-		});
-		it('should work without eventdata parameter', function () {
-			assert.strictEqual(
-				formatDateTZ(false, 'DSTART', date3),
-				'DSTART:20180702T154805Z'
-			);
-		});
-	});
+	// 	// it('should work with timezone', function () {
+	// 	// 	const ed = {timezone: 'Europe/Berlin'};
+	// 	// 	assert.strictEqual(
+	// 	// 		formatDateTZ('Europe/Berlin', 'DSTART', moment('2018-07-02T15:48:05.000Z'), ed),
+	// 	// 		'DSTART;TZID=Europe/Berlin:20180702T174805'
+	// 	// 	);
+	// 	// });
+	// 	it('should work without timezone', function () {
+	// 		assert.strictEqual(
+	// 			formatDateTZ(false, 'DSTART', date3, {}),
+	// 			'DSTART:20180702T154805Z'
+	// 		);
+	// 	});
+	// 	it('should work without eventdata parameter', function () {
+	// 		assert.strictEqual(
+	// 			formatDateTZ(false, 'DSTART', date3),
+	// 			'DSTART:20180702T154805Z'
+	// 		);
+	// 	});
+	// });
 
 	describe('escape()', function () {
 		it('should escape \\', function () {

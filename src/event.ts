@@ -1,3 +1,4 @@
+// import { DateTime } from 'luxon';
 // import type { RRule } from 'rrule';
 
 import {
@@ -6,15 +7,21 @@ import {
 	// checkEnum,
 	// checkNameAndMail,
 	escapeICalValue,
-	formatDate,
-	formatDateTZ,
+	// formatDateOld
+	// formatZonedDate,
+	formatDateUTC,
+	formatDateProp,
+	getTimeZoneStr,
+	// formatDateTZ,
 	// attributesToLines,
 	// calLinesToString,
 	// generateCustomAttributes,
 	// isRRule,
 	// toDate,
-	// toJSON
+	// toJSON,
+	ICalZonedDate,
 } from './utils';
+import ICalComponent from './component';
 import ICalAttendee, { ICalAttendeeData } from './attendee';
 // import ICalAlarm, { ICalAlarmData } from './alarm';
 import ICalCategory, { ICalCategoryData } from './category';
@@ -51,10 +58,9 @@ export type ICalEventTransparency =
 export interface ICalEventData {
 	uid: string;
 	sequence: number;
-	start: Date;
-	end: Date;
+	start: ICalZonedDate;
+	end: ICalZonedDate;
 	recurrenceId?: Date;
-	timezone?: string;
 	stamp: Date;
 	allDay?: boolean;
 	floating?: boolean;
@@ -134,18 +140,18 @@ export interface ICalEventData {
 // 	x: {key: string, value: string}[];
 // }
 
-interface ICalEventInternalRepeatingData {
-	freq: ICalEventRepeatingFreq;
-	count?: number;
-	interval?: number;
-	until?: Date;
-	byDay?: ICalWeekday[];
-	byMonth?: number[];
-	byMonthDay?: number[];
-	bySetPos?: number;
-	exclude?: Date[];
-	startOfWeek?: ICalWeekday;
-}
+// interface ICalEventInternalRepeatingData {
+// 	freq: ICalEventRepeatingFreq;
+// 	count?: number;
+// 	interval?: number;
+// 	until?: Date;
+// 	byDay?: ICalWeekday[];
+// 	byMonth?: number[];
+// 	byMonthDay?: number[];
+// 	bySetPos?: number;
+// 	exclude?: Date[];
+// 	startOfWeek?: ICalWeekday;
+// }
 
 
 /**
@@ -156,7 +162,9 @@ interface ICalEventInternalRepeatingData {
  * const event = calendar.createEvent();
  * ```
  */
-export default class ICalEvent {
+export default class ICalEvent extends ICalComponent {
+	public tagName: string = 'VEVENT';
+
 	public readonly data: ICalEventData;
 	// private readonly calendar: ICalCalendar;
 
@@ -169,6 +177,8 @@ export default class ICalEvent {
 	 */
 	// constructor(data: ICalEventData, calendar: ICalCalendar) {
 	constructor(options: ICalEventData) {
+		super();
+
 		this.data = options;
 
 		// this.data = {
@@ -259,13 +269,13 @@ export default class ICalEvent {
 		return this;
 	}
 
-	public setTimezone(value: ICalEventData['timezone']): this {
-		this.data.timezone = value;
-		if (value) {
-			this.setFloating(false);
-		}
-		return this;
-	}
+	// public setTimezone(value: ICalEventData['timezone']): this {
+	// 	this.data.timezone = value;
+	// 	if (value) {
+	// 		this.setFloating(false);
+	// 	}
+	// 	return this;
+	// }
 
 	public setStamp(value: ICalEventData['stamp']): this {
 		this.data.stamp = value;
@@ -1035,8 +1045,8 @@ export default class ICalEvent {
 	private _todo_to_lines(): string[] {
 		let g = '';
 
-		const { timezone } = this.data;
-		const hasTimeZone = !!timezone;
+		// const { timezone } = this.data;
+		// const hasTimeZone = !!timezone;
 
 
 		// TODO: REPEATING
@@ -1221,47 +1231,52 @@ export default class ICalEvent {
 
 		// CREATED
 		if (this.data.created) {
-			g += 'CREATED:' + formatDate(false, this.data.created) + '\r\n';
+			// g += 'CREATED:' + formatDateOld(false, this.data.created) + '\r\n';
+			g += 'CREATED:' + formatDateUTC(this.data.created) + '\r\n';
 		}
 
 		// LAST-MODIFIED
 		if (this.data.lastModified) {
-			g += 'LAST-MODIFIED:' + formatDate(false, this.data.lastModified) + '\r\n';
+			g += 'LAST-MODIFIED:' + formatDateUTC(this.data.lastModified) + '\r\n';
 		}
 
 		return g.split('\r\n');
 	}
 
-	public renderRawLines(): Array<string | undefined> {
+	public getTimeZones = () => {
+		const { start, end } = this.data;
+		const startZone = getTimeZoneStr(start);
+		const endZone = getTimeZoneStr(end);
+		const timeZones: string[] = [];
+		if (startZone) timeZones.push(startZone);
+		if (endZone && endZone !== startZone) timeZones.push(endZone);
+		return timeZones;
+	};
+
+	protected async renderToLines(): Promise<Array<ICalComponent | string | undefined>> {
 		const {
 			uid,
 			sequence,
 			stamp,
+			floating,
 			allDay,
-			timezone,
 			start,
 			end,
 			recurrenceId,
 		} = this.data;
-		const hasTimeZone = !!timezone;
 
 		const lines: Array<string | undefined> = [
-			'BEGIN:VEVENT',
 			`UID:${uid}`,
 			`SEQUENCE:${sequence}`,
-			`DTSTAMP:${formatDate(false, stamp, false, false)}`,
+			`DTSTAMP:${formatDateUTC(stamp)}`,
+			formatDateProp('DTSTART', start, floating || false, allDay || false),
+			end && formatDateProp('DTEND', start, floating || false, allDay || false),
 			...(allDay ? [
-				`DTSTART;VALUE=DATE:${formatDate(hasTimeZone, start, true)}`,
-				end && `DTEND;VALUE=DATE:${formatDate(hasTimeZone, end, true)}`,
 				'X-MICROSOFT-CDO-ALLDAYEVENT:TRUE',
 				'X-MICROSOFT-MSNCALENDAR-ALLDAYEVENT:TRUE',
-			] : [
-				formatDateTZ(hasTimeZone, 'DTSTART', start, this.data),
-				end && formatDateTZ(hasTimeZone, 'DTEND', end, this.data),
-			]),
+			] : []),
 			recurrenceId && `RECURRENCE-ID:${recurrenceId}`,
 			...this._todo_to_lines(),
-			'END:VEVENT',
 		];
 
 		return lines;

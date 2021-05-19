@@ -22,11 +22,21 @@ export {
 
 export {
 	default as ICalCalendar,
-	// ICalCalendarData,
-	ICalCalendarProdId as ICalCalendarProdIdData,
+	ICalCalendarOptions,
+	ICalCalendarProdId,
 	ICalCalendarMethod,
-	// ICalCalendarJSONData
 } from './calendar';
+
+export {
+	default as ICalCalendarWithZones,
+	ICalCalendarWithZonesOptions,
+	ICalVTimezoneGenerator,
+} from './calendar-with-zones';
+
+export {
+	default as ICalTimeZone,
+	ICalTimeZoneOptions,
+} from './timezone';
 
 export {
 	default as ICalCategory,
@@ -55,52 +65,11 @@ export {
 } from './types';
 
 export {
-	formatDate,
-	formatDateTZ,
+	// formatDateOld as formatDate,
+	// formatDateTZ,
+	formatDateUTC,
+	formatDateProp,
 	escapeICalValue,
-	calLinesToString,
+	foldLine,
+	filterAndJoinICalLines,
 } from './utils';
-
-// /* istanbul ignore else */
-// if (typeof module !== 'undefined') {
-// 	module.exports = Object.assign(ical, module.exports);
-// }
-
-
-
-// /**
-//  * Create a new, empty calendar and returns it.
-//  *
-//  * ```javascript
-//  * import ical from 'ical-generator';
-//  *
-//  * // or use require:
-//  * // const ical = require('ical-generator');
-//  *
-//  * const cal = ical();
-//  * ```
-//  *
-//  * You can pass options to setup your calendar or use setters to do this.
-//  *
-//  * ```javascript
-//  * import ical from 'ical-generator';
-//  *
-//  * // or use require:
-//  * // const ical = require('ical-generator');
-//  * const cal = ical({domain: 'sebbo.net'});
-//  *
-//  * // is the same as
-//  *
-//  * const cal = ical().domain('sebbo.net');
-//  *
-//  * // is the same as
-//  *
-//  * const cal = ical();
-//  * cal.domain('sebbo.net');
-//  * ```
-//  */
-// function ical(options: CalendarOptions = {}, events: ICalEvent[] = []): ICalCalendar {
-// 	return new ICalCalendar(options, events);
-// }
-
-// export default ical;

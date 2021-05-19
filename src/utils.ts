@@ -1,66 +1,114 @@
+import { DateTime } from 'luxon';
 import { ICalOrganizer } from './types';
 
-/**
- * Converts a valid date/time object supported by this library to a string.
- */
-export function formatDate(hasTimezone: boolean, d: Date, dateonly = false, floating = false): string {
-	// TODO: Not sure about use case.
-	// if (timezone?.startsWith('/')) {
-	// 	timezone = timezone.substr(1);
-	// }
+const CRLF = '\r\n';
 
-	const m = new Date(d);
+export type ICalZonedDate = DateTime | {
+	/**
+	 * Date as absolute moment in time. Note that the JS-native Date does
+	 * not contain any time zone information.
+	 */
+	date: Date;
 
-	// (!dateonly && !floating) || !timezone => utc
-	let s = m.getUTCFullYear() +
-		String(m.getUTCMonth() + 1).padStart(2, '0') +
-		m.getUTCDate().toString().padStart(2, '0');
+	/**
+	 * Time zone. If undefined, UTC will be assumed.
+	 * 
+	 * @example America/Los_Angeles
+	 */
+	zone?: string;
+};
 
-	// (dateonly || floating) && timezone => tz
-	if (hasTimezone) {
-		s = m.getFullYear() +
-			String(m.getMonth() + 1).padStart(2, '0') +
-			m.getDate().toString().padStart(2, '0');
-	}
-
-	if (dateonly) {
-		return s;
-	}
-
-	if (hasTimezone) {
-		s += 'T' + m.getHours().toString().padStart(2, '0') +
-			m.getMinutes().toString().padStart(2, '0') +
-			m.getSeconds().toString().padStart(2, '0');
-
-		return s;
-	}
-
-	s += 'T' + m.getUTCHours().toString().padStart(2, '0') +
-		m.getUTCMinutes().toString().padStart(2, '0') +
-		m.getUTCSeconds().toString().padStart(2, '0') +
-		(floating ? '' : 'Z');
-
-	return s;
+export function getTimeZoneStr(zonedDate: ICalZonedDate): string | undefined {
+	return zonedDate instanceof DateTime
+		? zonedDate.zoneName
+		: zonedDate.zone;
 }
 
-/**
- * Converts a valid date/time object supported by this library to a string.
- * For information about this format, see RFC 5545, section 3.3.5
- * https://tools.ietf.org/html/rfc5545#section-3.3.5
- */
-export function formatDateTZ(hasTimeZone: boolean, property: string, date: Date, eventData?: {floating?: boolean | null, timezone?: string | null}): string {
-	let tzParam = '';
-	let floating = eventData?.floating || false;
+function zondedDateToDateTime(zonedDate: ICalZonedDate): DateTime {
+	return zonedDate instanceof DateTime
+		? zonedDate
+		: DateTime.fromJSDate(zonedDate.date, { zone: zonedDate.zone || 'UTC' });
+}
 
-	if (eventData?.timezone) {
-		tzParam = ';TZID=' + eventData.timezone;
+export function formatZonedDate(zonedDate: ICalZonedDate, dateOnly = false): string {
+	const dt = zondedDateToDateTime(zonedDate);
+	return dt.toFormat(dateOnly
+		? `yyyyLLdd`
+		: `yyyyLLdd'T'HHmmss`
+	);
+}
 
-		// This isn't a 'floating' event because it has a timezone;
-		// but we use it to omit the 'Z' UTC specifier in formatDate()
-		floating = true;
+export function formatDateUTC(date: Date, dateOnly = false): string {
+	return formatZonedDate({ date }, dateOnly) + 'Z';
+}
+
+// export function formatZonedDateUTC(zonedDate: ICalZonedDate, dateOnly = false): string {
+// 	const dt = zondedDateToDateTime(zonedDate);
+// 	return dt.toFormat(dateOnly
+// 		? `yyyyLLdd`
+// 		: `yyyyLLdd'T'HHmmss`
+// 	);
+// }
+
+// export function formatDateUTC(d: Date, dateOnly = false): string {
+// 	return (
+// 		d.getUTCFullYear().toString() +
+// 		(d.getUTCMonth() + 1).toString().padStart(2, '0') +
+// 		d.getUTCDate().toString().padStart(2, '0') +
+// 		dateOnly
+// 			? ''
+// 			: (
+// 				d.getUTCHours().toString().padStart(2, '0') +
+// 				d.getUTCMinutes().toString().padStart(2, '0') +
+// 				d.getUTCSeconds().toString().padStart(2, '0')
+// 			)
+// 	);
+// 	// return (
+// 	// 	d.getFullYear().toString() +
+// 	// 	(d.getMonth() + 1).toString().padStart(2, '0') +
+// 	// 	d.getDate().toString().padStart(2, '0') +
+// 	// 	dateOnly
+// 	// 		? ''
+// 	// 		: (
+// 	// 			d.getHours().toString().padStart(2, '0') +
+// 	// 			d.getMinutes().toString().padStart(2, '0') +
+// 	// 			d.getSeconds().toString().padStart(2, '0')
+// 	// 		)
+// 	// );
+// }
+
+// /**
+//  * Converts a valid date/time object supported by this library to a string.
+//  * For information about this format, see RFC 5545, section 3.3.5
+//  * https://tools.ietf.org/html/rfc5545#section-3.3.5
+//  * 
+//  * @deprecated Switch to `formatTZDate()`.
+//  */
+// export function formatDateTZ(hasTimeZone: boolean, property: string, date: Date, eventData?: {floating?: boolean | null, timezone?: string | null}): string {
+// 	let tzParam = '';
+// 	let floating = eventData?.floating || false;
+
+// 	if (eventData?.timezone) {
+// 		tzParam = ';TZID=' + eventData.timezone;
+
+// 		// This isn't a 'floating' event because it has a timezone;
+// 		// but we use it to omit the 'Z' UTC specifier in formatDate()
+// 		floating = true;
+// 	}
+
+// 	return property + tzParam + ':' + formatDateOld(hasTimeZone, date, false, floating);
+// }
+
+export function formatDateProp(propertyName: string, zonedDate: ICalZonedDate, floating: boolean, allDay: boolean): string {
+	if (floating || allDay) {
+		return `${propertyName}${allDay ? ';VALUE=DATE' : ''}:${formatZonedDate(zonedDate, allDay)}`;
+	} else {
+		const dt = zondedDateToDateTime(zonedDate);
+		const zone = dt.zone.name;
+		return zone === 'UTC'
+			? `${propertyName}:${formatZonedDate(zonedDate, false)}Z`
+			: `${propertyName};TZID=${zone}:${formatZonedDate(zonedDate, false)}`;
 	}
-
-	return property + tzParam + ':' + formatDate(hasTimeZone, date, false, floating);
 }
 
 /**
@@ -84,34 +132,37 @@ export function cleanLines(lines: Array<string | undefined>): string[] {
 		.filter(l => !!l) as string[]; // Remove empty lines including `undefined` values
 }
 
+export function foldLine(line: string): string {
+	const str = line as string;
+	let result = '';
+	let c = 0;
+	for (let i = 0; i < str.length; i++) {
+		let ch = str.charAt(i);
+
+		// surrogate pair, see https://mathiasbynens.be/notes/javascript-encoding#surrogate-pairs
+		if (ch >= '\ud800' && ch <= '\udbff') {
+			ch += str.charAt(++i);
+		}
+
+		const charsize = Buffer.from(ch, 'utf-8').length;
+		c += charsize;
+		if (c > 74) {
+			result += `${CRLF} `;
+			c = charsize;
+		}
+
+		result += ch;
+	}
+	return result;
+}
+
 /**
- * Cleans up an array of iCalendar lines and applies line wrapping.
+ * Converts iCalendar lines to one string with proper lines breaks and line-wrapping.
  */
-export function calLinesToString(lines: string[]): string {
-	return lines
-		.map((line) => {
-			const str = line as string;
-			let result = '';
-			let c = 0;
-			for (let i = 0; i < str.length; i++) {
-				let ch = str.charAt(i);
-
-				// surrogate pair, see https://mathiasbynens.be/notes/javascript-encoding#surrogate-pairs
-				if (ch >= '\ud800' && ch <= '\udbff') {
-					ch += str.charAt(++i);
-				}
-
-				const charsize = Buffer.from(ch, 'utf-8').length;
-				c += charsize;
-				if (c > 74) {
-					result += '\r\n ';
-					c = charsize;
-				}
-
-				result += ch;
-			}
-			return result;
-		}).join('\r\n');
+export function filterAndJoinICalLines(lines: Array<string | undefined>): string {
+	return filterEmpty(lines)
+		// .map(foldLine)
+		.join(CRLF);
 }
 
 export function addOrGetCustomAttributes (data: {x: [string, string][]}, keyOrArray: ({key: string, value: string})[] | [string, string][] | Record<string, string>): void;
@@ -359,4 +410,8 @@ export function toDurationString(seconds: number): string {
 	}
 
 	return string;
+}
+
+export function filterEmpty<T>(unfiltered: Array<T>): Array<NonNullable<T>> {
+	return unfiltered.filter(str => !!str) as Array<NonNullable<T>>;
 }

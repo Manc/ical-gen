@@ -1,11 +1,23 @@
-import ICalCalendar, { ICalCalendarOptions, ICalVTimezoneGenerator, ICalCalendarProdId } from '../src/calendar';
-import ICalEvent from '../src/event';
+// Import from `index.ts` to check that the main entry exports everything.
+import {
+	ICalCalendar,
+	ICalCalendarOptions,
+	ICalCalendarProdId,
+	ICalEvent,
+} from '../src';
 
-describe('Calendar', () => {
+
+describe('ICalCalendar', () => {
 	const demoEvent1 = new ICalEvent({
-		timezone: 'Europe/London',
-		start: new Date(1621036800000),
-		end: new Date(1621123200000),
+		// timezone: 'Europe/London',
+		start: {
+			date: new Date(1621036800000),
+			zone: 'Europe/London',
+		},
+		end: {
+			date: new Date(1621123200000),
+			zone: 'Europe/London',
+		},
 		sequence: 1,
 		stamp: new Date(1621036800000),
 		summary: 'Test 1',
@@ -13,9 +25,15 @@ describe('Calendar', () => {
 	});
 
 	const demoEvent2 = new ICalEvent({
-		timezone: 'Europe/Berlin',
-		start: new Date(1621036800000),
-		end: new Date(1621123200000),
+		// timezone: 'Europe/Berlin',
+		start: {
+			date: new Date(1621036800000),
+			zone: 'Europe/Berlin',
+		},
+		end: {
+			date: new Date(1621123200000),
+			zone: 'Europe/Berlin',
+		},
 		sequence: 1,
 		stamp: new Date(1621036800000),
 		summary: 'Test 2',
@@ -40,14 +58,19 @@ describe('Calendar', () => {
 			expect(cal.timezone).toBeUndefined();
 			expect(cal.ttl).toBeUndefined();
 			expect(cal.url).toBeUndefined();
-			expect(cal.events).toEqual([]);
-			expect(cal.vTimeZoneGenerator).toBeUndefined();
+			expect(cal.children).toEqual([]);
 		});
 
 		it('should apply values from options object', () => {
 			const event1 = new ICalEvent({
-				start: new Date(1621036800000),
-				end: new Date(1621123200000),
+				start: {
+					date: new Date(1621036800000),
+					zone: 'Europe/London',
+				},
+				end: {
+					date: new Date(1621123200000),
+					zone: 'Europe/London',
+				},
 				sequence: 1,
 				stamp: new Date(1621036800000),
 				summary: 'Test 1',
@@ -61,8 +84,8 @@ describe('Calendar', () => {
 				timezone: 'America/Los_Angeles',
 				ttl: 1234,
 				url: 'https://example.com/test',
-				events: [event1],
-				vTimeZoneGenerator: (tz: string): undefined => { return; },
+				children: [event1],
+				// vTimeZoneGenerator: (tz: string): undefined => { return; },
 			};
 			const cal = new ICalCalendar(testCalOptions1);
 			expect(cal.prodId.company).toBe('My Company X');
@@ -74,21 +97,26 @@ describe('Calendar', () => {
 			expect(cal.timezone).toBe(testCalOptions1.timezone);
 			expect(cal.ttl).toBe(testCalOptions1.ttl);
 			expect(cal.url).toBe(testCalOptions1.url);
-			expect(cal.events).toHaveLength(1);
-			expect(cal.events[0]).toBe(event1);
-			expect(cal.vTimeZoneGenerator).toBe(testCalOptions1.vTimeZoneGenerator);
+			expect(cal.children).toBeDefined();
+			expect(cal.children).toHaveLength(1);
+			expect(cal.children![0]).toBe(event1);
 		});
 	});
 
-	describe('addEvent()', () => {
-		const cal = new ICalCalendar();
-
-		it('should add an event', () => {
-			expect(cal.events).toHaveLength(0);
+	describe('addChild()', () => {
+		it('should add a child component object as often as requested', () => {
+			const cal = new ICalCalendar();
+			expect(cal.children).toHaveLength(0);
 
 			const event1 = new ICalEvent({
-				start: new Date(1621036800000),
-				end: new Date(1621123200000),
+				start: {
+					date: new Date(1621036800000),
+					zone: 'Europe/London',
+				},
+				end: {
+					date: new Date(1621123200000),
+					zone: 'Europe/London',
+				},
 				sequence: 1,
 				stamp: new Date(1621036800000),
 				summary: 'Test 1',
@@ -96,163 +124,110 @@ describe('Calendar', () => {
 			});
 
 			const event2 = new ICalEvent({
-				start: new Date(1621036800000),
-				end: new Date(1621123200000),
+				start: {
+					date: new Date(1621036800000),
+					zone: 'Europe/London',
+				},
+				end: {
+					date: new Date(1621123200000),
+					zone: 'Europe/London',
+				},
 				sequence: 1,
 				stamp: new Date(1621036800000),
 				summary: 'Test 2',
 				uid: 'test2',
 			});
 
-			cal.addEvent(event1);
-			expect(cal.events).toEqual([event1]);
+			cal.addChild(event1);
+			expect(cal.children).toEqual([event1]);
 
-			cal.addEvent(event2);
-			expect(cal.events).toEqual([event1, event2]);
+			cal.addChild(event2);
+			expect(cal.children).toEqual([event1, event2]);
 
-			cal.addEvent(event1);
-			expect(cal.events).toEqual([event1, event2, event1]);
+			cal.addChild(event1);
+			expect(cal.children).toEqual([event1, event2, event1]);
+		});
+
+		it('should add a string child as often as requested', () => {
+			const cal = new ICalCalendar();
+			expect(cal.children).toHaveLength(0);
+
+			cal.addChild('Line 1');
+			expect(cal.children).toEqual(['Line 1']);
+
+			cal.addChild('Line 2');
+			expect(cal.children).toEqual(['Line 1', 'Line 2']);
 		});
 
 		it('should return this', () => {
-			const returnValue = cal.removeAllEvents();
-			expect(returnValue).toBe(cal);
+			const cal = new ICalCalendar();
+			expect(cal.addChild('')).toBe(cal);
 		});
 	});
 
-	describe('removeAllEvents()', () => {
+	describe('renderToString()', () => {
 		const cal = new ICalCalendar({
-			prodId: {
-				company: 'Test Co.',
-				product: 'Test',
-				language: 'EN',
-			},
-			events: [
-				new ICalEvent({
-					start: new Date(1621036800000),
-					end: new Date(1621123200000),
-					sequence: 1,
-					stamp: new Date(1621036800000),
-					summary: 'Test 1',
-					uid: 'test1',
-				}),
-				new ICalEvent({
-					start: new Date(1621036800000),
-					end: new Date(1621123200000),
-					sequence: 1,
-					stamp: new Date(1621036800000),
-					summary: 'Test 2',
-					uid: 'test2',
-				})
-			]
+			prodId: demoProdId,
+			//             10        20        30        40        50        60        70  74
+			//     ---------|---------|---------|---------|---------|---------|---------|---|
+			name: 'This calendar name is deliberately longer than 74 characters to force line-wrapping!',
+			description: 'Test description',
+			ttl: 60 * 60 * 24 * 3, // 3 days
+			children: [demoEvent1, demoEvent2],
 		});
 
-		it('should remove all events', () => {
-			expect(cal.events).toHaveLength(2);
-			cal.removeAllEvents();
-			expect(cal.events).toHaveLength(0);
+		const strPromise = cal.renderToString();
+
+		it('should have `\\r\\n` line breaks', async () => {
+			const str = await strPromise;
+			// console.log(str.replace(/\r\n/g, '⏎\n'));
+			expect(str.split('\r\n').length).toBeGreaterThan(6); // > 6 because the test calender is expected to produce more than 6 lines
 		});
 
-		it('should return this', () => {
-			const returnValue = cal.removeAllEvents();
-			expect(returnValue).toBe(cal);
-		});
-	});
+		it('should apply line-folding', async () => {
+			const str = await strPromise;
 
-	describe('render()', () => {
-		describe('without a VTIMEZONE genarator', () => {
-			const cal = new ICalCalendar({
-				prodId: demoProdId,
-				//     12345678901234567890123456789012345678901234567890123456789012345678901234
-				name: 'This calendar name is deliberately longer than 74 characters to force line-wrapping!',
-				description: 'Test description',
-				ttl: 60 * 60 * 24 * 3, // 3 days
-				events: [demoEvent1, demoEvent2],
-			});
-
-			// Rendered string without a VTIMEZONE genarator.
-			const str = cal.render();
-
-			it('should have `\\r\\n` line breaks', () => {
-				expect(str.split('\r\n').length).toBeGreaterThan(20); // > 20 because the test calender is expected to produce at least 20 lines
-			});
-
-			it('should limit lines to 74 characters', () => {
-				// Find longest line
-				const lines = str.split('\r\n');
-				const maxLength = lines.reduce((currentMax, line) => {
-					return Math.max(currentMax, line.length);
-				}, 0);
-				expect(maxLength).toBe(74);
-			});
-
-			it('should conatin the line-wrapped property `name`', () => {
-				//                     12345678901234567890123456789012345678901234567890123456789012345678901234|
-				expect(str).toContain('NAME:This calendar name is deliberately longer than 74 characters to force\r\n  line-wrapping!');
-				expect(str).toContain('X-WR-CALNAME:This calendar name is deliberately longer than 74 characters \r\n to force line-wrapping!');
-			});
-
-			it('should conatin formatted product ID', () => {
-				expect(str).toContain('PRODID:-//My Company X//My Product Name//XX');
-			});
-
-			it('should conatain property `description`', () => {
-				expect(str).toContain('X-WR-CALDESC:Test description');
-			});
-
-			it('should conatain property `ttl`', () => {
-				expect(str).toContain('REFRESH-INTERVAL;VALUE=DURATION:P3D');
-				expect(str).toContain('X-PUBLISHED-TTL:P3D');
-			});
-
-			it('should conatin all events', () => {
-				expect(str.match(/BEGIN:VEVENT/g) || []).toHaveLength(2);
-				expect(str.match(/END:VEVENT/g) || []).toHaveLength(2);
-				expect(str.match(/UID:testuid1/g) || []).toHaveLength(1);
-				expect(str.match(/UID:testuid2/g) || []).toHaveLength(1);
-			});
-
-			it('should not contain any VTIMEZONE components', () => {
-				expect(str).not.toContain('BEGIN:VTIMEZONE');
-			});
+			// Find longest line
+			const maxLength = str
+				.split('\r\n')
+				.reduce((currentMax, line) => Math.max(currentMax, line.length), 0);
+			expect(maxLength).toBe(74);
 		});
 
-		describe('with a VTIMEZONE genarator', () => {
-			// A mock VTIMEZONE genarator that returns a result if the provided
-			// time zone string starts with `Europe/`.
-			const mockVTZGenerator: ICalVTimezoneGenerator = (tz) => {
-				if (tz.startsWith('Europe/')) {
-					return [
-						`BEGIN:VTIMEZONE`,
-						`X-MOCK-VTIMEZONE:${tz}`,
-						`END:VTIMEZONE`
-					].join('\r\n');
-				}
-			};
+		it('should contain the folded property `name`', async () => {
+			const str = await strPromise;
+			//                     12345678901234567890123456789012345678901234567890123456789012345678901234|
+			expect(str).toContain('NAME:This calendar name is deliberately longer than 74 characters to force\r\n  line-wrapping!');
+			expect(str).toContain('X-WR-CALNAME:This calendar name is deliberately longer than 74 characters \r\n to force line-wrapping!');
+		});
 
-			it('should apply all available VTIMEZONEs from the calendar and all events once', () => {
-				const str = new ICalCalendar({
-					prodId: demoProdId,
-					events: [demoEvent1, demoEvent2, demoEvent1], // Include at least one time zone twice
-					timezone: 'Europe/Paris',
-					vTimeZoneGenerator: mockVTZGenerator,
-				}).render();
-				expect(str.match(/X-MOCK-VTIMEZONE:/g) || []).toHaveLength(3);
-				expect(str).toContain('X-MOCK-VTIMEZONE:Europe/Paris');
-				expect(str).toContain('X-MOCK-VTIMEZONE:Europe/London');
-				expect(str).toContain('X-MOCK-VTIMEZONE:Europe/Berlin');
-			});
+		it('should contain formatted product ID', async () => {
+			const str = await strPromise;
+			expect(str).toContain('PRODID:-//My Company X//My Product Name//XX');
+		});
 
-			it('should ignore time zones that do not resolve to a VTIMEZONE', () => {
-				const str = new ICalCalendar({
-					prodId: demoProdId,
-					events: [demoEvent1],
-					timezone: 'Something/Wrong', // This will not resolve to a VTIMEZONE
-					vTimeZoneGenerator: mockVTZGenerator,
-				}).render();
-				expect(str.match(/X-MOCK-VTIMEZONE:/g) || []).toHaveLength(1);
-				expect(str).toContain('X-MOCK-VTIMEZONE:Europe/London');
-			});
+		it('should conatain property `description`', async () => {
+			const str = await strPromise;
+			expect(str).toContain('X-WR-CALDESC:Test description');
+		});
+
+		it('should conatain property `ttl`', async () => {
+			const str = await strPromise;
+			expect(str).toContain('REFRESH-INTERVAL;VALUE=DURATION:P3D');
+			expect(str).toContain('X-PUBLISHED-TTL:P3D');
+		});
+
+		it('should contain all events', async () => {
+			const str = await strPromise;
+			expect(str.match(/BEGIN:VEVENT/g) || []).toHaveLength(2);
+			expect(str.match(/END:VEVENT/g) || []).toHaveLength(2);
+			expect(str.match(/UID:testuid1/g) || []).toHaveLength(1);
+			expect(str.match(/UID:testuid2/g) || []).toHaveLength(1);
+		});
+
+		it('should not contain any VTIMEZONE components', async () => {
+			const str = await strPromise;
+			expect(str).not.toContain('BEGIN:VTIMEZONE');
 		});
 	});
 });
