@@ -41,11 +41,18 @@ const calendar = new ICalCalendar({
 // Instantiate a new event component:
 const event = new ICalEvent({
 	uid: 'MyUniqueUID@example.com', // or supply a UUID
-	timezone: 'Europe/London',
-	start: new Date('2021-05-17T18:30:00Z'),
-	end: new Date('2021-05-17T21:00:00Z'),
-	sequence: 1,
+	// An event date can be represented either by a native JS Date and a time zone
+	// string or, if you like, a Luxon DateTime object. Let's use a Date for the
+	// start date:
+	start: {
+		date: new Date('2021-05-17T18:30:00Z')
+		zone: 'Europe/London',
+	},
+	// And let's use a Luxon Datetime for the end date:
+	end: DateTime.fromISO('2021-05-16T00:00:00Z', { zone: 'Europe/London' }),
+	// For the stamp we can safely use a Date, because no time zone information is required.
 	stamp: new Date('2021-05-16T00:00:00Z'),
+	sequence: 1,
 	summary: 'My Birthday Party',
 });
 
