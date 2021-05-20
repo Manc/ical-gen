@@ -4,7 +4,7 @@ import {
 	ICalCalendarWithZones,
 	ICalCalendarWithZonesOptions,
 	ICalVTimezoneGenerator,
-	ICalCalendarTimeZones,
+	ICalTimeZone,
 	ICalTimeZoneOptions,
 	ICalEvent,
 } from '../src';
@@ -21,7 +21,7 @@ const vTimeZoneGenerator: ICalVTimezoneGenerator = async (tz) => {
 		const options: ICalTimeZoneOptions = {
 			fromString: `X-MOCK-VTIMEZONE:${tz}`,
 		};
-		return new ICalCalendarTimeZones(options);
+		return new ICalTimeZone(options);
 	}
 	throw new Error('Time zone not found');
 };

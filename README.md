@@ -98,6 +98,7 @@ Some differences between **ical-generator** and **ical-gen** (this library):
 - The way data is stored internally is different with an aim to be more efficient.
 - **ical-generator** always generates a UUID string for the `UID` property when a new event is created, which you can then override with a custom value. With **ical-gen** you must always provide your own `UID` value. If you really, really need a universally unique value that is always different whenever you render the event (which you shouldn’t), apply your own UUID method.
 - At least for now, this library is meant to be used in Node.js 11.15 or later, not in a browser environment.
+- The render function returns a Promise. This allows any component to do async stuff on the fly if needed without blocking. For example, to resolve time zone data more efficiently.
 
 
 ## Todo:
@@ -118,7 +119,7 @@ Some differences between **ical-generator** and **ical-gen** (this library):
 [npm-version-image]: https://img.shields.io/npm/v/ical-gen.svg?style=flat
 
 [travis-url]: https://travis-ci.org/Manc/ical-gen
-[travis-image]: https://img.shields.io/travis/Manc/ical-gen/master.svg?style=flat
+[travis-image]: https://img.shields.io/travis/Manc/ical-gen/main.svg?style=flat
 
 [min-size-image]: https://img.shields.io/bundlephobia/min/ical-gen?style=flat
 

@@ -1,18 +1,22 @@
 import ICalComponent from './component';
 
-export interface ICalTimeZoneOptions {
+export type ICalTimeZoneOptions = {
 	fromString: string;
+} | {
+	fromLines: string[];
 }
 
 export default class ICalTimeZone extends ICalComponent {
 	public tagName: string = 'VTIMEZONE';
-
 	private lines: string[];
 
 	constructor(options: ICalTimeZoneOptions) {
 		super();
-		const { fromString } = options;
-		this.lines = fromString.split('\n').map(l => l.trimEnd());
+		if ('fromLines' in options) {
+			this.lines = options.fromLines;
+		} else {
+			this.lines = options.fromString.split('\n').map(l => l.trimEnd());
+		}
 	}
 
 	public getTimeZones = () => [];

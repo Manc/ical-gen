@@ -12,6 +12,11 @@
 // } from './alarm';
 
 export {
+	default as ICalComponent,
+	ICalComponentOptions,
+} from './component';
+
+export {
 	default as ICalAttendee,
 	ICalAttendeeData,
 	ICalAttendeeType,
