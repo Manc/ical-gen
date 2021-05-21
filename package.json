@@ -1,6 +1,6 @@
 {
   "name": "ical-gen",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A fast and modular iCalendar generator entirely written in TypeScript",
   "scripts": {
     "build": "rm -rf ./dist ; tsc --project tsconfig.build.json",

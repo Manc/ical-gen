@@ -19,7 +19,7 @@ export default class ICalTimeZone extends ICalComponent {
 		}
 	}
 
-	public getTimeZones = () => [];
+	public getTimeZones = (): string[] => [];
 
-	protected renderToLines = async () => this.lines;
+	protected renderToLines = async (): Promise<string[]> => this.lines;
 }

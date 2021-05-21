@@ -29,7 +29,7 @@ const vTimeZoneGenerator: ICalVTimezoneGenerator = async (tz) => {
 /**
  * Mock product ID.
  */
- const prodId: Readonly<ICalCalendarProdId> = {
+const prodId: Readonly<ICalCalendarProdId> = {
 	company: 'My Company X',
 	product: 'My Product Name',
 	language: 'XX',

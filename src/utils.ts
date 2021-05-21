@@ -33,8 +33,8 @@ function zondedDateToDateTime(zonedDate: ICalZonedDate): DateTime {
 export function formatZonedDate(zonedDate: ICalZonedDate, dateOnly = false): string {
 	const dt = zondedDateToDateTime(zonedDate);
 	return dt.toFormat(dateOnly
-		? `yyyyLLdd`
-		: `yyyyLLdd'T'HHmmss`
+		? 'yyyyLLdd'
+		: 'yyyyLLdd\'T\'HHmmss'
 	);
 }
 

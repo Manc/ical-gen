@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ICalEvent renders the provided options properly 1`] = `
+"BEGIN:VEVENT
+UID:testuid
+SEQUENCE:99
+DTSTAMP:20210509T070809Z
+DTSTART;TZID=America/Los_Angeles:20210521T030000
+DTEND;TZID=America/Los_Angeles:20210521T043000
+SUMMARY:Test Title
+DESCRIPTION:Test description.
+URL;VALUE=URI:https://example.com
+END:VEVENT"
+`;

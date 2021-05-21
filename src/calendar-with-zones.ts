@@ -39,7 +39,7 @@ export default class ICalCalendarWithZones extends ICalCalendar {
 		const tzComponents: Array<ICalTimeZone> = (
 			await Promise.all(
 				timeZones.map(tz =>
-					this.vTimeZoneGenerator(tz).catch(_ => undefined)
+					this.vTimeZoneGenerator(tz).catch(() => undefined)
 				)
 			)
 		).filter(component => !!component) as ICalTimeZone[];

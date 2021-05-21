@@ -50,10 +50,10 @@ export {
 
 export {
 	default as ICalEvent,
+	ICalEventOptions,
 	ICalEventStatus,
 	ICalEventBusyStatus,
 	ICalEventTransparency,
-	ICalEventData,
 	// ICalEventJSONData
 } from './event';
 

@@ -1,7 +1,7 @@
 import assert from 'assert';
 // import moment from 'moment-timezone';
 import ICalCalendar from '../src/calendar';
-import ICalEvent, {ICalEventBusyStatus, ICalEventData, ICalEventStatus, ICalEventTransparency} from '../src/event';
+import ICalEvent, {ICalEventBusyStatus, ICalEventOptions, ICalEventStatus, ICalEventTransparency} from '../src/event';
 import {ICalEventRepeatingFreq, ICalWeekday} from '../src/types';
 import ICalAttendee from '../src/attendee';
 // import ICalAlarm, {ICalAlarmType} from '../src/alarm';
@@ -12,7 +12,7 @@ import ICalCategory from '../src/category';
 describe('ical-generator Event', function () {
 	describe('constructor()', function () {
 		it('shoud set data from constructor', function () {
-			const data: ICalEventData = {
+			const data: ICalEventOptions = {
 				uid: 'FOO',
 				sequence: 1,
 				start: new Date(), //.toJSON(),

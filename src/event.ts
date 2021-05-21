@@ -55,7 +55,7 @@ export type ICalEventTransparency =
 	| 'OPAQUE'
 ;
 
-export interface ICalEventData {
+export interface ICalEventOptions {
 	uid: string;
 	sequence: number;
 	start: ICalZonedDate;
@@ -165,7 +165,7 @@ export interface ICalEventData {
 export default class ICalEvent extends ICalComponent {
 	public tagName: string = 'VEVENT';
 
-	public readonly data: ICalEventData;
+	public readonly data: ICalEventOptions;
 	// private readonly calendar: ICalCalendar;
 
 	/**
@@ -176,7 +176,7 @@ export default class ICalEvent extends ICalComponent {
 	 * @param calendar Reference to ICalCalendar object
 	 */
 	// constructor(data: ICalEventData, calendar: ICalCalendar) {
-	constructor(options: ICalEventData) {
+	constructor(options: ICalEventOptions) {
 		super();
 
 		this.data = options;
@@ -244,27 +244,27 @@ export default class ICalEvent extends ICalComponent {
 
 
 
-	public setUID(value: ICalEventData['uid']): this {
+	public setUID(value: ICalEventOptions['uid']): this {
 		this.data.uid = value;
 		return this;
 	}
 
-	public setSequence(value: ICalEventData['sequence']): this {
+	public setSequence(value: ICalEventOptions['sequence']): this {
 		this.data.sequence = value;
 		return this;
 	}
 
-	public setStart(value: ICalEventData['start']): this {
+	public setStart(value: ICalEventOptions['start']): this {
 		this.data.start = value;
 		return this;
 	}
 
-	public setEnd(value: ICalEventData['end']): this {
+	public setEnd(value: ICalEventOptions['end']): this {
 		this.data.end = value;
 		return this;
 	}
 
-	public setRecurrenceId(value: ICalEventData['recurrenceId']): this {
+	public setRecurrenceId(value: ICalEventOptions['recurrenceId']): this {
 		this.data.recurrenceId = value;
 		return this;
 	}
@@ -277,17 +277,17 @@ export default class ICalEvent extends ICalComponent {
 	// 	return this;
 	// }
 
-	public setStamp(value: ICalEventData['stamp']): this {
+	public setStamp(value: ICalEventOptions['stamp']): this {
 		this.data.stamp = value;
 		return this;
 	}
 
-	public setAllDay(value: ICalEventData['allDay']): this {
+	public setAllDay(value: ICalEventOptions['allDay']): this {
 		this.data.allDay = value;
 		return this;
 	}
 
-	public setFloating(value: ICalEventData['floating']): this {
+	public setFloating(value: ICalEventOptions['floating']): this {
 		this.data.floating = value;
 		return this;
 	}
@@ -295,7 +295,7 @@ export default class ICalEvent extends ICalComponent {
 	/**
 	 * The summary is the title of the event.
 	 */
-	public setSummary(value: ICalEventData['summary']): this {
+	public setSummary(value: ICalEventOptions['summary']): this {
 		this.data.summary = value;
 		return this;
 	}
@@ -303,17 +303,17 @@ export default class ICalEvent extends ICalComponent {
 	/**
 	 * Set an optional description for the event.
 	 */
-	public setDescription(value: ICalEventData['description']): this {
+	public setDescription(value: ICalEventOptions['description']): this {
 		this.data.description = value;
 		return this;
 	}
 
-	public setLocation(value: ICalEventData['location']): this {
+	public setLocation(value: ICalEventOptions['location']): this {
 		this.data.location = value;
 		return this;
 	}
 
-	public setOrganizer(value: ICalEventData['organizer']): this {
+	public setOrganizer(value: ICalEventOptions['organizer']): this {
 		this.data.organizer = value;
 		return this;
 	}

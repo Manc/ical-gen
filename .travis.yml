@@ -3,7 +3,8 @@ node_js:
  - stable
 install:
  - npm install
-script:
- - npm test
 before_script:
  - npm run build
+script:
+ - npm test
+ - npm lint

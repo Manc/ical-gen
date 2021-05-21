@@ -2,7 +2,7 @@ import { foldLine, filterAndJoinICalLines } from './utils';
 
 export interface ICalComponentOptions {
 	children?: Array<ICalComponent | string>;
-};
+}
 
 export default abstract class ICalComponent {
 	/**
@@ -59,7 +59,7 @@ export default abstract class ICalComponent {
 	 */
 	protected abstract renderToLines(): Promise<Array<ICalComponent | string | undefined>>;
 
-	 /**
+	/**
 	 * Render the component and its child components to a string.
 	 */
 	public async renderToString(): Promise<string> {

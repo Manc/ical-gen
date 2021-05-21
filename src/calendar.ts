@@ -104,7 +104,7 @@ export default class ICalCalendar extends ICalComponent {
 		this.timezone = timezone;
 	}
 
-	public getTimeZones = () => {
+	public getTimeZones = (): string[] => {
 		const timeZones = new Set<string>(
 			this.timezone ? [this.timezone] : undefined
 		);
