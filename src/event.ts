@@ -1270,7 +1270,7 @@ export default class ICalEvent extends ICalComponent {
 			`SEQUENCE:${sequence}`,
 			`DTSTAMP:${formatDateUTC(stamp)}`,
 			formatDateProp('DTSTART', start, floating || false, allDay || false),
-			end && formatDateProp('DTEND', start, floating || false, allDay || false),
+			end && formatDateProp('DTEND', end, floating || false, allDay || false),
 			...(allDay ? [
 				'X-MICROSOFT-CDO-ALLDAYEVENT:TRUE',
 				'X-MICROSOFT-MSNCALENDAR-ALLDAYEVENT:TRUE',
