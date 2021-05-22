@@ -34,9 +34,8 @@
   "author": "Nick Singleton",
   "license": "MIT",
   "engines": {
-    "node": ">= 11.15.0"
+    "node": ">= 12"
   },
-  "private": false,
   "devDependencies": {
     "@types/jest": "^26.0.23",
     "@types/luxon": "^1.26.5",

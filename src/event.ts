@@ -1243,7 +1243,7 @@ export default class ICalEvent extends ICalComponent {
 		return g.split('\r\n');
 	}
 
-	public getTimeZones = () => {
+	public getTimeZones = (): string[] => {
 		const { start, end } = this.data;
 		const startZone = getTimeZoneStr(start);
 		const endZone = getTimeZoneStr(end);
