@@ -5,7 +5,7 @@
 [![Size][min-size-image]][npm-url]
 [![MIT License][license-image]][license-url]
 
-**ical-gen** is a super-small library that lets you easily create valid iCalendar files or feeds in Node.js.
+**ical-gen** is a modular library written in TypeScript that lets you easily create valid iCalendar files or feeds with Node.js.
 
 **ical-gen** is a fork of the amazing [**ical-generator**](https://github.com/sebbo2002/ical-generator) library by Sebastian Pekarek, which has more features and is probably generally better supported by its author than this brand new library.
 
@@ -14,7 +14,9 @@
 > Warning: This version of README relates to the latest push to the `main` branch on GitHub, not necessarily to the latest NPM package.
 
 
-## 📦 Installation
+## ⚡️ Quick Start
+
+### Installation
 
 ```sh
 yarn add ical-gen
@@ -23,7 +25,7 @@ npm install ical-gen
 ```
 
 
-## ⚡️ Quick Start
+### Basic usage
 
 ```typescript
 import { ICalCalendar, ICalEvent } from 'ical-gen';
@@ -101,7 +103,7 @@ Some differences between **ical-generator** and **ical-gen** (this library):
 - The render function returns a Promise. This allows any component to do async stuff on the fly if needed without blocking. For example, to resolve time zone data more efficiently.
 
 
-## Todo:
+## Todo
 
 - A lot more iCalendar components need to be implemented:
   - `ICalEvent` (it’s still a big mess and only a basic draft)
@@ -116,12 +118,12 @@ Some differences between **ical-generator** and **ical-gen** (this library):
 
 
 [npm-url]: https://npmjs.org/package/ical-gen
-[npm-version-image]: https://img.shields.io/npm/v/ical-gen.svg?style=flat
+[npm-version-image]: https://img.shields.io/npm/v/ical-gen.svg?style=flat-square
 
-[travis-url]: https://travis-ci.org/Manc/ical-gen
-[travis-image]: https://img.shields.io/travis/Manc/ical-gen/main.svg?style=flat
+[travis-url]: https://travis-ci.com/Manc/ical-gen
+[travis-image]: https://img.shields.io/travis/com/Manc/ical-gen/main.svg?style=flat-square
 
-[min-size-image]: https://img.shields.io/bundlephobia/min/ical-gen?style=flat
+[min-size-image]: https://img.shields.io/bundlephobia/min/ical-gen?style=flat-square
 
 [license-url]: LICENSE
-[license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
+[license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
